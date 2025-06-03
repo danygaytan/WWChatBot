@@ -1,0 +1,25 @@
+{
+  "name": "intern",
+  "version": "1.0.0",
+  "description": "General purpose chatbot",
+  "main": "index.js",
+  "repository": "https://github.com/danygaytan/the-intern",
+  "author": "Daniel Gaytan",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "dev": "tsc; node dist/index.js",
+    "nodemon": "nodemon index.ts"
+  },
+  "dependencies": {
+    "dotenv": "^16.5.0",
+    "openai": "^5.0.1",
+    "whatsapp-web.js": "git+https://github.com/pedroslopez/whatsapp-web.js#v1.30.0"
+  }
+}
