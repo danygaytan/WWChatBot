@@ -76,8 +76,6 @@ client.on('message', async (msg) => {
 
     if (!chat.isGroup) {
         chat.sendMessage('Que esperabas? una API a chatgpt gratis? a solas? nah');
-    }else if (chat.name !== process.env.RESTRICTED_GROUP_NAME){
-        chat.sendMessage('Ajas, solo pertenezco a un grupo :(');
     }
 
     await handleCommand(chat, msg);
