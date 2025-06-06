@@ -1,34 +1,69 @@
 # syntax=docker/dockerfile:1
 
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
-
 ARG NODE_VERSION=22.12.0
-
-FROM node:${NODE_VERSION}-alpine
-
-# Use production node environment by default.
-ENV NODE_ENV production
-
+FROM node:${NODE_VERSION}-alpine AS build
 
 WORKDIR /usr/src/app
 
 COPY package.json ./package.json
 COPY yarn.lock    ./yarn.lock
 
-# RUN apk update && apk add --no-cache git
+RUN apk update && \
+    apk add --no-cache \
+      git \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      dbus \
+      xvfb
 
-# Run the application as a non-root user.
-USER node
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-# Copy the rest of the source files into the image.
+RUN apk update && apk add --no-cache git \
+ && yarn install --frozen-lockfile
+
 COPY . .
 
-# Expose the port that the application listens on.
-EXPOSE 3000
+RUN yarn build
 
-# Run the application.
-CMD ["yarn", "dev"]
+FROM node:${NODE_VERSION}-alpine AS runtime
+
+WORKDIR /usr/src/app
+
+COPY --from=build /usr/src/app/node_modules ./node_modules
+COPY --from=build /usr/src/app/dist      ./dist
+COPY --from=build /usr/src/app/package.json ./package.json
+
+# Install runtime dependencies for Chromium
+RUN apk update && \
+    apk add --no-cache \
+      chromium \
+      nss \
+      freetype \
+      harfbuzz \
+      ca-certificates \
+      ttf-freefont \
+      dbus \
+      xvfb && \
+    chown -R node:node /usr/src/app
+
+# Create /tmp/.X11-unix directory with the right permissions
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
+
+USER node
+
+# Configure Puppeteer to use the installed Chromium
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+# Add these environment variables for headless operation
+ENV DISPLAY=:99
+ENV CHROME_BIN=/usr/bin/chromium-browser
+ENV CHROME_PATH=/usr/lib/chromium/
+# Add Chrome flags for headless operation
+ENV CHROME_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process --disable-extensions"
+
+EXPOSE 3000
+CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x24 & node dist/index.js"]

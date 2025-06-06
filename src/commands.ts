@@ -37,7 +37,7 @@ export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) =>
     const command_prefix = process.env.COMMAND_PREFIX ?? DEFAULT_COMMAND_PREFIX;
     const command = msg.body.split(' ')[0];
 
-    if(!command.startsWith(command_prefix)) chat.sendMessage(global.error_no_command_text);
+    if(!command.startsWith(command_prefix)) return chat.sendMessage(global.error_no_command_text);
 
     const command_text = command.slice(1).toString();
 
@@ -45,6 +45,6 @@ export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) =>
         case 'proposito': proposito(chat, msg); break;
         case 'chatgpt': chatgpt(chat, msg); break;
         case 'ayuda': ayuda(chat, msg); break;
-        default: chat.sendMessage(global.error_no_command_found);
+        default: chat.sendMessage(global.error_no_command_found); break;
     }
 }

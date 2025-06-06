@@ -12,10 +12,11 @@
     "typescript": "^5.8.3"
   },
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.json",
+    "dev":   "tsc --watch",
     "watch": "tsc -w",
-    "dev": "tsc; node dist/index.js",
-    "nodemon": "nodemon index.ts"
+    "start": "tsc; node dist/index.js",
+    "nodemon": "nodemon src/index.ts"
   },
   "dependencies": {
     "dotenv": "^16.5.0",
