@@ -1,15 +1,12 @@
 import { Client, LocalAuth } from "whatsapp-web.js";
 import { handleCommand } from "./commands";
 import * as dotenv from 'dotenv';
+import * as global from './utils/global';
 dotenv.config()
-
-console.log('test');
 
 const client = new Client({
     authStrategy: new LocalAuth(),
-    // proxyAuthentication: { username: 'username', password: 'password' },
     puppeteer: { 
-        // executablePath: process.env.PUPPETEER_EXECUTABLE_PATH,
         headless: false,
         args: [
             "--no-sandbox",
@@ -51,12 +48,12 @@ client.on('qr', (qr) => {
 let pairingCodeRequested = false;
 client.on('qr', async (qr) => {
     // NOTE: This event will not be fired if a session is specified.
-    console.log('QR RECEIVED', qr);
+    console.log('QR RECEIVED: ', qr);
 
     // paiuting code example
     const pairingCodeEnabled = false;
     if (pairingCodeEnabled && !pairingCodeRequested) {
-        const pairingCode = await client.requestPairingCode('+522206781821'); // enter the target phone number
+        const pairingCode = await client.requestPairingCode(process.env.PHONE_NUMBER || '');
         console.log('Pairing code enabled, code: '+ pairingCode);
         pairingCodeRequested = true;
     }
@@ -73,9 +70,8 @@ client.on('auth_failure', msg => {
 
 client.on('message', async (msg) => {
     const chat = await msg.getChat();
-
     if (!chat.isGroup) {
-        chat.sendMessage('Que esperabas? una API a chatgpt gratis? a solas? nah');
+        chat.sendMessage(global.error_forbidden_caller);
     }
 
     await handleCommand(chat, msg);

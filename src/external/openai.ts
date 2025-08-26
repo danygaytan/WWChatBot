@@ -8,7 +8,7 @@ const client = new OpenAI({
 
 export const sendQuery = async (query: string) => {
     return await client.responses.create({
-        model: "gpt-4.1",
-        input: query + ". Limitate a responder con 400 tokens como maximo",
+        model: process.env.MODEL || '' ,
+        input: query + process.env.QUERY_LIMITER,
     });
 }
