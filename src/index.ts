@@ -2,10 +2,17 @@ import { Client, LocalAuth } from "whatsapp-web.js";
 import { handleCommand } from "./commands";
 import * as dotenv from 'dotenv';
 import * as global from './utils/global';
+import * as qrcode from 'qrcode';
 dotenv.config()
 
 const client = new Client({
-    authStrategy: new LocalAuth(),
+    authStrategy: new LocalAuth(
+        {
+            clientId: process.env.CLIENT_ID || 'chatgpt_bot',
+            dataPath: '/var/sessions',
+            rmMaxRetries: 3,
+        }
+    ),
     puppeteer: { 
         headless: false,
         args: [
@@ -37,10 +44,6 @@ client.on('loading_screen', (percent, message) => {
 client.on('qr', (qr) => {
     // Generate and scan this code with your phone
     console.log('QR Code:', qr);
-    const { writeFileSync } = require('node:fs');
-    const QRCode = require('qrcode');
-    QRCode.toFile('qrcode.png', qr, { type: 'png' });
-    console.log('Saved QR to qrcode.png');
 });
 
 
@@ -48,11 +51,11 @@ client.on('qr', (qr) => {
 let pairingCodeRequested = false;
 client.on('qr', async (qr) => {
     // NOTE: This event will not be fired if a session is specified.
-    console.log('QR RECEIVED: ', qr);
+    const newQRCode = qrcode.toString(qr, (err, url) => {});
+    console.log('Parsed QR Code: ', newQRCode);
 
-    // paiuting code example
     const pairingCodeEnabled = false;
-    if (pairingCodeEnabled && !pairingCodeRequested) {
+    if (pairingCodeEnabled && !pairingCodeRequested) { 
         const pairingCode = await client.requestPairingCode(process.env.PHONE_NUMBER || '');
         console.log('Pairing code enabled, code: '+ pairingCode);
         pairingCodeRequested = true;
