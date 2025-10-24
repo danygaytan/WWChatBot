@@ -7,11 +7,10 @@ dotenv.config()
 
 const client = new Client({
     authStrategy: new LocalAuth(
-        {
-            clientId: process.env.CLIENT_ID || 'chatgpt_bot',
-            dataPath: '/var/sessions',
-            rmMaxRetries: 3,
-        }
+        // {
+        //     dataPath: '/var/sessions',
+        //     rmMaxRetries: 3,
+        // }
     ),
     puppeteer: { 
         headless: false,
@@ -66,13 +65,22 @@ client.on('authenticated', () => {
     console.log('AUTHENTICATED');
 });
 
+client.on('disconnected', (reason) => {
+    console.log('Disconnected, reason: ', reason);
+})
+
 client.on('auth_failure', msg => {
     // Fired if session restore was unsuccessful
     console.error('AUTHENTICATION FAILURE', msg);
 });
 
+client.on('ready', () => {
+    console.log('Client is ready');
+})
+
 client.on('message', async (msg) => {
     const chat = await msg.getChat();
+    console.log('msg obj received: ', msg);
     if (!chat.isGroup) {
         chat.sendMessage(global.error_forbidden_caller);
     }

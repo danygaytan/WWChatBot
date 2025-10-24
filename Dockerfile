@@ -23,7 +23,7 @@ RUN apk update && \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN apk update && apk add --no-cache git \
- && yarn install --frozen-lockfile
+  && yarn install --frozen-lockfile
 
 COPY . .
 

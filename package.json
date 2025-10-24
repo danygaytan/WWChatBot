@@ -27,6 +27,6 @@
     "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.26",
-    "whatsapp-web.js": "git+https://github.com/pedroslopez/whatsapp-web.js#v1.30.0"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main"
   }
 }
