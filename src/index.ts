@@ -7,10 +7,10 @@ dotenv.config()
 
 const client = new Client({
     authStrategy: new LocalAuth(
-        // {
-        //     dataPath: '/var/sessions',
-        //     rmMaxRetries: 3,
-        // }
+        {
+            dataPath: '/var/sessions',
+            rmMaxRetries: 3,
+        }
     ),
     puppeteer: { 
         headless: false,
@@ -75,12 +75,12 @@ client.on('auth_failure', msg => {
 });
 
 client.on('ready', () => {
-    console.log('Client is ready');
+    console.log('Client is ready!');
 })
 
 client.on('message', async (msg) => {
     const chat = await msg.getChat();
-    console.log('msg obj received: ', msg);
+    console.log('Msg string: ', msg.body);
     if (!chat.isGroup) {
         chat.sendMessage(global.error_forbidden_caller);
     }
