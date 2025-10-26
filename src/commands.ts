@@ -2,16 +2,22 @@ import WAWebJS from "whatsapp-web.js";
 import * as dotenv from 'dotenv';
 import * as global from './utils/global';
 import { sendQuery } from "./external/openai";
-import { searchAndAppendContextFromMessageObject } from "./utils/utils";
+import { constructResponseInputMessageContentList, extractAttachmentFromMessageObject, searchAndConstructContextFromMessageObject } from "./utils/utils";
 dotenv.config();
 
 const chatgpt = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     try{
-        const completeMessage = await searchAndAppendContextFromMessageObject(msg);
-        if (completeMessage.length == 0){
+        const [completeMessageString, mediaAttachments] = await searchAndConstructContextFromMessageObject(msg);
+        if (completeMessageString.length == 0){
             chat.sendMessage('Tienes que escribir un query');
         }
-        const api_response = await sendQuery(completeMessage);
+
+        const inputContent = constructResponseInputMessageContentList({
+            text_query_message: completeMessageString,
+            img_query_attachments: mediaAttachments,
+        });
+
+        const api_response = await sendQuery(inputContent);
         msg.reply(api_response.output_text);
     } catch(e){
         console.log(e);
