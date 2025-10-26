@@ -80,7 +80,6 @@ client.on('ready', () => {
 
 client.on('message', async (msg) => {
     const chat = await msg.getChat();
-    console.log('Msg string: ', msg.body);
     if (!chat.isGroup) {
         chat.sendMessage(global.error_forbidden_caller);
     }
