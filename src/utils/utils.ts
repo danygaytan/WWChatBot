@@ -1,6 +1,5 @@
-import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses.js";
+import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses";
 import WAWebJS, { MessageMedia } from "whatsapp-web.js";
-import { isMainThread, markAsUncloneable } from "worker_threads";
 
 // In case we have to add a previous message body to the current one 
 // [TODO] What about media messages? How are these going to be concanated?
@@ -12,7 +11,7 @@ export const searchAndConstructContextFromMessageObject = async (msg: WAWebJS.Me
         const quotedMessageObject = await msg.getQuotedMessage();
         const quotedMessageContent = quotedMessageObject.body;
         messageWithContextString =
-        `
+            `
         Contexto:
         ${quotedMessageContent}
 
@@ -21,11 +20,11 @@ export const searchAndConstructContextFromMessageObject = async (msg: WAWebJS.Me
         `
 
         const quotedMessageMedia = await extractAttachmentFromMessageObject(quotedMessageObject);
-        if(quotedMessageMedia !== null) attachments.push(quotedMessageMedia); 
+        if (quotedMessageMedia !== null) attachments.push(quotedMessageMedia);
     }
 
     const mainMessageMedia = await extractAttachmentFromMessageObject(msg);
-    if(mainMessageMedia !== null) attachments.push(mainMessageMedia);
+    if (mainMessageMedia !== null) attachments.push(mainMessageMedia);
 
     console.log(messageWithContextString, attachments.length);
     return [messageWithContextString, attachments];
@@ -48,7 +47,7 @@ export const constructResponseInputMessageContentList = ({
 }): ResponseInputMessageContentList => {
     let inputMessageContent: ResponseInputMessageContentList = [];
 
-    if(text_query_message){
+    if (text_query_message) {
         const textInputMessageItem = {
             type: 'input_text',
             text: text_query_message,
@@ -57,7 +56,7 @@ export const constructResponseInputMessageContentList = ({
         inputMessageContent.push(textInputMessageItem as ResponseInputContent);
     }
 
-    if(img_query_attachments && img_query_attachments.length > 0) {
+    if (img_query_attachments && img_query_attachments.length > 0) {
         const imgInputAttachmentItems = img_query_attachments.map(item => {
             return {
                 type: 'input_image',

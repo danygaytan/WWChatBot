@@ -23,7 +23,7 @@ RUN apk update && \
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
 RUN apk update && apk add --no-cache git \
-  && yarn install --frozen-lockfile
+  && yarn install
 
 COPY . .
 
@@ -62,4 +62,4 @@ ENV CHROME_PATH=/usr/lib/chromium/
 ENV CHROME_FLAGS="--no-sandbox --disable-setuid-sandbox --disable-dev-shm-usage --disable-gpu --no-first-run --no-zygote --single-process --disable-extensions"
 
 EXPOSE 3000
-CMD ["sh", "-c", "Xvfb :99 -screen 0 1280x720x24 & node dist/index.js"]
+CMD Xvfb :99 -screen 0 1280x720x24 & sleep 2; find /var/sessions -name 'SingletonLock' -delete && node dist/index.js

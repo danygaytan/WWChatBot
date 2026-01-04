@@ -1,4 +1,3 @@
-version: "3.8"
 services:
   server:
     user: "0:0"
@@ -15,6 +14,21 @@ services:
       - "3000:3000"
     volumes:
       - wwjs-data:/var/sessions:rw
+  sqlite_db:
+    container_name: sqlite_db
+    build:
+      context: .
+      dockerfile: Dockerfile.sqlite
+    volumes:
+      - ./sqlite:/database
+    networks:
+      - mainnetwork
+    command: ["tail", "-f", "/dev/null"]
 volumes:
   wwjs-data:
     external: true
+  sqlite_data:
+
+networks:
+  mainnetwork:
+    driver: bridge

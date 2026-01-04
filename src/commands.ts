@@ -28,7 +28,7 @@ const chatgpt = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
 const DEFAULT_COMMAND_PREFIX = '!';
 
 export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
-    const command_prefix = process.env.COMMAND_PREFIX ?? DEFAULT_COMMAND_PREFIX;
+    const command_prefix = process.env.COMMAND_PREFIX || DEFAULT_COMMAND_PREFIX;
     const command = msg.body.split(' ')[0];
 
     if(!command.startsWith(command_prefix)) return;
