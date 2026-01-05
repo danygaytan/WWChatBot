@@ -1,5 +1,7 @@
+import { randomInt } from "crypto";
 import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses";
 import WAWebJS, { MessageMedia } from "whatsapp-web.js";
+
 
 // In case we have to add a previous message body to the current one 
 // [TODO] What about media messages? How are these going to be concanated?
@@ -68,4 +70,78 @@ export const constructResponseInputMessageContentList = ({
     }
 
     return inputMessageContent;
+}
+
+export const stripMessageContent = (msg: WAWebJS.Message) => {
+    return msg.body.split(' ').slice(1).join(' '); // message content without command
+}
+
+
+export const verifyURLString = async (url_string: string) => {
+    const url_whitelist = [
+        "amazon",
+        "walmart",
+        "mercadolibre",
+        ""
+    ];
+    try {
+        const response = await fetch(url_string, {
+            method: 'GET',
+            headers: { Accept: 'application/json' },
+        });
+        return url_string;
+    } catch (e) {
+        console.log('URL no es valida: ', e);
+        return null;
+    }
+}
+
+export const generateRandomUsername = () => {
+    const adjectives = [
+        "Explosivo",
+        "Radioactivo",
+        "Crujiente",
+        "Desorientado",
+        "Pegajoso",
+        "Galáctico",
+        "Sarcástico",
+        "Fluorescente",
+        "Sonámbulo",
+        "Incomprendido",
+        "Chistoso",
+        "Esponjoso",
+        "Veloz",
+        "Dramático",
+        "Bailarín",
+        "Misterioso",
+        "Glotón",
+        "Relampagueante",
+        "Invisible",
+        "Afortunado"
+    ];
+
+    const nouns = [
+        "Axolote",
+        "Panda",
+        "Aguacate",
+        "Tostadora",
+        "Capibara",
+        "Sandía",
+        "Calcetín",
+        "Pingüino",
+        "Chilaquil",
+        "Pantufla",
+        "Dinosaurio",
+        "Kiwi",
+        "Microondas",
+        "Ornitorrinco",
+        "Banana",
+        "Taco",
+        "Koala",
+        "Lámpara",
+        "Zanahoria",
+        "Sombrero"
+    ];
+
+    return `${nouns[randomInt(nouns.length)]} ${adjectives[randomInt(adjectives.length)]}`
 }

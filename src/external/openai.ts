@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import * as dotenv from 'dotenv';
-import { ResponseInputMessageContentList } from "openai/resources/responses/responses.js";
+import { ResponseInputMessageContentList } from "openai/resources/responses/responses";
 dotenv.config()
 
 const DEFAULT_MAX_OUTPUT_TOKEN = 400;

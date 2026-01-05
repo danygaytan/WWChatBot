@@ -17,16 +17,23 @@
     "build": "tsc -p tsconfig.json",
     "dev": "tsc --watch",
     "watch": "tsc -w",
-    "start": "tsc; node dist/index.js",
+    "start": "node dist/index.js",
+    "fullstart": "node dist/index.js",
     "nodemon": "nodemon src/index.ts"
   },
   "dependencies": {
+    "@types/cheerio": "^1.0.0",
+    "@types/jsdom": "^27.0.0",
+    "@types/node-fetch": "^2.6.13",
     "dotenv": "^16.5.0",
+    "jsdom": "^27.4.0",
+    "node-cron": "^4.2.1",
+    "node-html-parser": "^7.0.1",
     "openai": "^5.0.1",
     "qrcode": "^1.5.4",
     "reflect-metadata": "^0.2.2",
     "sqlite3": "^5.1.7",
     "typeorm": "^0.3.28",
-    "whatsapp-web.js": "git+https://github.com/pedroslopez/whatsapp-web.js.git#main"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js#main"
   }
 }

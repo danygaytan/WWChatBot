@@ -1,9 +1,11 @@
-import { Client, LocalAuth } from "whatsapp-web.js";
+import pkg from "whatsapp-web.js";
+const { Client, LocalAuth } = pkg;
 import { handleCommand } from "./commands";
 import { AppDataSource } from "./db";
 import * as dotenv from 'dotenv';
 import * as global from './utils/global';
 import * as qrcode from 'qrcode';
+import cron from 'node-cron';
 dotenv.config()
 
 const main = async () => {
@@ -16,12 +18,13 @@ const main = async () => {
     const client = new Client({
         authStrategy: new LocalAuth(
             {
-                dataPath: '/var/sessions',
+                dataPath: './.wwebjs_auth', // /var/sessions whenever Docker runs it
                 rmMaxRetries: 3,
             }
         ),
         puppeteer: {
-            headless: false,
+            headless: true, // false whenever Docker runs it
+            executablePath: '/usr/bin/chromium', // delete when Docker runs it
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -97,3 +100,5 @@ const main = async () => {
 };
 
 main();
+
+

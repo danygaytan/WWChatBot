@@ -4,9 +4,15 @@ import { Asset } from "./asset"
 @Entity()
 export class User {
 
-    // Phone number with Country code
+    // Whatsapp provided id [user](id->user)
     @PrimaryColumn()
     id: string
+
+    @Column()
+    server: string
+
+    @Column()
+    serialized_id: string
 
     @Column({
         length: 50,
@@ -14,5 +20,12 @@ export class User {
     username: string
 
     @OneToMany(() => Asset, (asset: Asset) => asset.id)
-    tracked_assets: Asset[]
+    assets: Asset[]
 }
+
+
+/*
+User could have many assets to track (0-N).
+Each user PK is their whatsapp provided id.
+The username is to reference the user when replying back to them.
+*/
