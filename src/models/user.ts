@@ -19,7 +19,7 @@ export class User {
     })
     username: string
 
-    @OneToMany(() => Asset, (asset: Asset) => asset.id)
+    @OneToMany(() => Asset, (asset: Asset) => asset.prospect)
     assets: Asset[]
 }
 

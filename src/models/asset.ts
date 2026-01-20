@@ -5,8 +5,8 @@ import { User } from "./user"
 
 @Entity()
 export class Asset {
-    @PrimaryGeneratedColumn()
-    id: number
+    @PrimaryGeneratedColumn("uuid")
+    id: string
 
     @Column({
         nullable: false
@@ -21,7 +21,12 @@ export class Asset {
     @Column({
         nullable: true
     })
-    price: number
+    price: string
+
+    @Column({
+        nullable: true
+    })
+    previous_price: string
 
     @Column({
         nullable: true
@@ -29,6 +34,7 @@ export class Asset {
     store: string
 
     @ManyToOne(() => User, (user) => user.assets)
+    @JoinColumn({ name: "user_id" })
     prospect: User
 }
 

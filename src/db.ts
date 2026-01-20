@@ -6,8 +6,9 @@ import { Asset } from "./models/asset"
 export const AppDataSource = new DataSource({
     type: "sqlite",
     database: "prod",
+    dropSchema: false,
     entities: [User, Asset],
     synchronize: true,
-    logging: true,
+    logging: false,
 });
 

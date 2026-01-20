@@ -1,15 +1,14 @@
 import fetch from 'node-fetch';
 import { parse } from 'node-html-parser';
-import { Asset_STRUCT, Store_ENUM } from '../types';
+import { Asset , Store_ENUM } from '../types';
 
-export const scrapeAssetInfo = async (asset: Asset_STRUCT): Promise<Asset_STRUCT> => {
+export const scrapeAndCreateAssetData = async (asset_param: Asset): Promise<Asset | null> => {
     try {
-        const asset_url = asset.url_string;
-        if(!asset_url || asset_url == null) {
+        if(!asset_param.url_string || asset_param.url_string == null) {
             throw('Asset URL is invalid');
         }
 
-        const response = await fetch(asset_url, {
+        const http_response = await fetch(asset_param.url_string, {
             method: 'GET',
             redirect: 'follow',
             headers: {
@@ -19,7 +18,7 @@ export const scrapeAssetInfo = async (asset: Asset_STRUCT): Promise<Asset_STRUCT
             }
         });
 
-        const html = await response.text();
+        const html = await http_response.text();
         const root = parse(html);
 
         const asset_description_content_tag = root.getElementById('productTitle');
@@ -28,12 +27,19 @@ export const scrapeAssetInfo = async (asset: Asset_STRUCT): Promise<Asset_STRUCT
         const asset_price_content_tag = root.getElementById('items[0.base][customerVisiblePrice][amount]');
         const asset_price = asset_price_content_tag?.rawAttributes['value']
 
-        asset.name = asset_name;
-        asset.price = Number(asset_price);
-        asset.store = Store_ENUM.AMAZON;
+        return { 
+            id: asset_param.id,
+            name: asset_name?.trim(),
+            price: asset_price,
+            previous_price: asset_param.price,
+            store: asset_param.store,
+            prospect: asset_param.prospect,
+            url_string: asset_param.url_string,
+        } as Asset;
+
     } catch (e) {
-        console.log('Error in scrapeAssetInfo: ', e);
+        console.log('Error in function: ', e);
     }
 
-    return asset;
+    return null;
 }

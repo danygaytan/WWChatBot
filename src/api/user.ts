@@ -1,8 +1,8 @@
-import { createUser, getUserByID } from "../queries/user";
-import { User_STRUCT } from "../types";
+import { User } from "../types";
 import { generateRandomUsername } from "../utils/utils";
+import { createUser, getUserByID } from "../queries/user";
 
-export const getOrCreateUser = async (user_param: User_STRUCT) => {
+export const getOrCreateUser = async (user_param: User) => {
     let user = await getUserByID(user_param.id);
     if (!user) {
         const user_query_input = {

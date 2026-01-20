@@ -72,76 +72,36 @@ export const constructResponseInputMessageContentList = ({
     return inputMessageContent;
 }
 
+// return message content without command
 export const stripMessageContent = (msg: WAWebJS.Message) => {
-    return msg.body.split(' ').slice(1).join(' '); // message content without command
+    return msg.body.split(' ').slice(1).join(' ');
 }
 
-
-export const verifyURLString = async (url_string: string) => {
-    const url_whitelist = [
-        "amazon",
-        "walmart",
-        "mercadolibre",
-        ""
-    ];
+export const isURLValid = async (url_string: string) => {
     try {
-        const response = await fetch(url_string, {
+        const url_whitelist = String(process.env.DOMAIN_WHITELIST).split(',') || [];
+        console.log(url_whitelist);
+        const domain_url = url_string.split(':')[1].split('/')[2];
+        const is_valid_url_domain = url_whitelist.includes(domain_url);
+
+        if(!is_valid_url_domain) {
+            return false;
+        }
+
+        await fetch(url_string, {
             method: 'GET',
             headers: { Accept: 'application/json' },
         });
-        return url_string;
+        return true;
     } catch (e) {
         console.log('URL no es valida: ', e);
-        return null;
+        return false;
     }
 }
 
 export const generateRandomUsername = () => {
-    const adjectives = [
-        "Explosivo",
-        "Radioactivo",
-        "Crujiente",
-        "Desorientado",
-        "Pegajoso",
-        "Galáctico",
-        "Sarcástico",
-        "Fluorescente",
-        "Sonámbulo",
-        "Incomprendido",
-        "Chistoso",
-        "Esponjoso",
-        "Veloz",
-        "Dramático",
-        "Bailarín",
-        "Misterioso",
-        "Glotón",
-        "Relampagueante",
-        "Invisible",
-        "Afortunado"
-    ];
-
-    const nouns = [
-        "Axolote",
-        "Panda",
-        "Aguacate",
-        "Tostadora",
-        "Capibara",
-        "Sandía",
-        "Calcetín",
-        "Pingüino",
-        "Chilaquil",
-        "Pantufla",
-        "Dinosaurio",
-        "Kiwi",
-        "Microondas",
-        "Ornitorrinco",
-        "Banana",
-        "Taco",
-        "Koala",
-        "Lámpara",
-        "Zanahoria",
-        "Sombrero"
-    ];
+    const adjectives = String(process.env.BOT_USER_ADJECTIVES).split(',') || [];
+    const nouns = String(process.env.BOT_USER_NOUNS).split(',') || [];
 
     return `${nouns[randomInt(nouns.length)]} ${adjectives[randomInt(adjectives.length)]}`
 }

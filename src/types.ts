@@ -1,21 +1,21 @@
-import { Asset } from "./models/asset"
-import { User } from "./models/user"
+import { Asset as Asset_model } from "./models/asset"
 
-export interface User_STRUCT {
+export interface User {
     id: string,
     server: string,
     serialized_id: string,
-    username?: string,
-    tracked_assets?: [Asset]
+    username: string,
+    assets: Asset_model[]
 }
 
-export interface Asset_STRUCT {
-    id?: number,
+export interface Asset {
+    id?: string,
     url_string?: string,
     name?: string,
-    price?: number, // double
+    price?: string,
+    previous_price?: string,
     store?: Store_ENUM,
-    prospect?: User // user id
+    prospect: { id: string } // User id
 }
 
 export enum Store_ENUM {

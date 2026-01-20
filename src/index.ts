@@ -5,26 +5,23 @@ import { AppDataSource } from "./db";
 import * as dotenv from 'dotenv';
 import * as global from './utils/global';
 import * as qrcode from 'qrcode';
-import cron from 'node-cron';
+import { createGetAndUpdateAllAssetsCronJob } from './cron-jobs/assets';
 dotenv.config()
 
-const main = async () => {
-    try {
-        await AppDataSource.initialize()
-    } catch (error) {
-        console.log(error)
-    }
+export let global_client: pkg.Client;
 
+const main = async () => {
     const client = new Client({
         authStrategy: new LocalAuth(
             {
-                dataPath: './.wwebjs_auth', // /var/sessions whenever Docker runs it
+                // './.wwebjs_auth' as a default
+                dataPath: '/var/sessions', // /var/sessions whenever Docker runs it
                 rmMaxRetries: 3,
             }
         ),
         puppeteer: {
-            headless: true, // false whenever Docker runs it
-            executablePath: '/usr/bin/chromium', // delete when Docker runs it
+            headless: false, // false whenever Docker runs it
+            // executablePath: '/usr/bin/chromium', // comment when Docker runs it
             args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -46,6 +43,15 @@ const main = async () => {
     });
 
     client.initialize();
+
+    global_client = client;
+
+    try {
+        await AppDataSource.initialize()
+    } catch (error) {
+        console.log(error)
+    }
+
 
     client.on('loading_screen', (percent, message) => {
         console.log('LOADING SCREEN', percent, message);
@@ -91,14 +97,9 @@ const main = async () => {
 
     client.on('message', async (msg) => {
         const chat = await msg.getChat();
-        if (!chat.isGroup) {
-            chat.sendMessage(global.error_forbidden_caller);
-        }
-
         await handleCommand(chat, msg);
     })
 };
 
 main();
-
-
+createGetAndUpdateAllAssetsCronJob();
