@@ -33,7 +33,7 @@ export class Asset {
     })
     store: string
 
-    @ManyToOne(() => User, (user) => user.assets)
+    @ManyToOne(() => User, (user: User) => user.assets)
     @JoinColumn({ name: "user_id" })
     prospect: User
 }

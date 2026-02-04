@@ -1,27 +1,31 @@
-import { Asset, User } from "../types";
+import { Asset, Store_ENUM, User } from "../types";
 import { getOrCreateUser } from "./user";
 import { getUserByID } from "../queries/user";
 import { sendAssetUpdateToUser } from "./whatsapp";
 import { scrapeAndCreateAssetData } from "../scraper/scraper";
 import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../queries/asset";
 import * as global from '../utils/global';
+import { isURLValid } from "../utils/utils";
 
-export const createAsset = async (asset_param: Asset, user_param: User): Promise<Asset | null> => {
+export const createAsset = async (asset_url_param: string, user_param: User): Promise<Asset | null> => {
     try {
-        const user = await getOrCreateUser(user_param);
-        if (!user) throw (global.error_user_not_found);
+        const [is_url_valid, storeENUM] = await isURLValid(asset_url_param);
+        if(!is_url_valid) throw (global.error_track_command_unable_to_verify_url);
+        
+        let asset_prototype: Asset = {
+            url_string: asset_url_param,
+            store: storeENUM as Store_ENUM,
+            prospect: {id : user_param.id}
+        }
 
-        let asset = await scrapeAndCreateAssetData(asset_param);
+        let asset = await scrapeAndCreateAssetData(asset_prototype);
         if(!asset) throw (global.error_fetching_asset);
 
-        asset.prospect = { id: user.id };
-        
         return await createAssetTracker(asset);
     } catch (e) {
         console.log("Error in trackAsset: ", e);
+        return null;
     }
-
-    return null;
 }
 
 export const updateAsset = async (asset_param: Asset) => {

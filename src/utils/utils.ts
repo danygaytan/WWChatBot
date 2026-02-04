@@ -1,6 +1,8 @@
 import { randomInt } from "crypto";
 import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses";
 import WAWebJS, { MessageMedia } from "whatsapp-web.js";
+import { Store_ENUM } from "../types";
+import * as global from './global';
 
 
 // In case we have to add a previous message body to the current one 
@@ -72,36 +74,56 @@ export const constructResponseInputMessageContentList = ({
     return inputMessageContent;
 }
 
-// return message content without command
-export const stripMessageContent = (msg: WAWebJS.Message) => {
+// return message content without command text and prefix
+export const getPromptFromMessage = (msg: WAWebJS.Message) => {
     return msg.body.split(' ').slice(1).join(' ');
+}
+
+export const getPrefixAndCommandFromMessage = (msg: WAWebJS.Message) => {
+    const full_command = msg.body.split(' ').slice(0).join(' ');
+    const prefix = full_command[0];
+    const command = full_command.slice(1);
+
+    return [prefix, command];
 }
 
 export const isURLValid = async (url_string: string) => {
     try {
         const url_whitelist = String(process.env.DOMAIN_WHITELIST).split(',') || [];
-        console.log(url_whitelist);
         const domain_url = url_string.split(':')[1].split('/')[2];
-        const is_valid_url_domain = url_whitelist.includes(domain_url);
+        const [is_valid_url_domain, domainENUM] = isValidDomain(domain_url);
 
         if(!is_valid_url_domain) {
-            return false;
+            return [false, domainENUM]
         }
 
         await fetch(url_string, {
             method: 'GET',
             headers: { Accept: 'application/json' },
         });
-        return true;
+        return [true, domainENUM];
     } catch (e) {
-        console.log('URL no es valida: ', e);
-        return false;
+        return [false, null];
     }
 }
 
+export const isValidDomain = (url_domain_text: string) => {
+    // I am thinking on moving this whitelist to a more scalable and hidden approach.
+    try {
+        const url_domain_whitelist = new Map<string, Store_ENUM>();
+        url_domain_whitelist.set('a', Store_ENUM.AMAZON);
+        url_domain_whitelist.set('amazon', Store_ENUM.AMAZON);
+
+        return [true, url_domain_whitelist.get(url_domain_text)];
+    } catch (e: any) {
+        return [false, Store_ENUM.DEFAULT]
+    }
+
+}
+
 export const generateRandomUsername = () => {
-    const adjectives = String(process.env.BOT_USER_ADJECTIVES).split(',') || [];
     const nouns = String(process.env.BOT_USER_NOUNS).split(',') || [];
+    const adjectives = String(process.env.BOT_USER_ADJECTIVES).split(',') || [];
 
     return `${nouns[randomInt(nouns.length)]} ${adjectives[randomInt(adjectives.length)]}`
 }

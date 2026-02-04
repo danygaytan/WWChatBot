@@ -1,6 +1,6 @@
 import pkg from "whatsapp-web.js";
 const { Client, LocalAuth } = pkg;
-import { handleCommand } from "./commands";
+import { handleCommand } from "./commands/index";
 import { AppDataSource } from "./db";
 import * as dotenv from 'dotenv';
 import * as global from './utils/global';

@@ -31,7 +31,7 @@ export const getAllAssets = async (): Promise<Asset[]> => {
     const assets = await AppDataSource.getRepository(Asset_model)
     .createQueryBuilder('asset')
     .leftJoinAndSelect('asset.prospect', 'prospect')
-    .getMany();
+    .getMany() as Asset[];
 
     let parsed_assets: Asset[] = [];
 
