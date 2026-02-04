@@ -1,14 +1,11 @@
 import fetch from 'node-fetch';
-import { parse } from 'node-html-parser';
+import { HTMLElement, parse } from 'node-html-parser';
 import { Asset , Store_ENUM } from '../utils/types';
+import * as global from '../utils/global';
 
-export const scrapeAndCreateAssetData = async (asset_param: Asset): Promise<Asset | null> => {
+export const getUpdatedAssetInfo = async (asset_param: Asset): Promise<(Asset | (string | null))[]> => {
     try {
-        if(!asset_param.url_string || asset_param.url_string == null) {
-            throw('Asset URL is invalid');
-        }
-
-        const http_response = await fetch(asset_param.url_string, {
+        const http_response = await fetch(asset_param.url_string as string, {
             method: 'GET',
             redirect: 'follow',
             headers: {
@@ -21,25 +18,41 @@ export const scrapeAndCreateAssetData = async (asset_param: Asset): Promise<Asse
         const html = await http_response.text();
         const root = parse(html);
 
-        const asset_description_content_tag = root.getElementById('productTitle');
-        const asset_name = asset_description_content_tag?.firstChild?.innerText;
+        let asset_data: (string | undefined)[] = [asset_param.name, asset_param.price];
+        switch(asset_param.store) {
+            case Store_ENUM.AMAZON:
+                asset_data = amazonScraper(root);
+                break;
+            default: break;
+        }
 
-        const asset_price_content_tag = root.getElementById('items[0.base][customerVisiblePrice][amount]');
-        const asset_price = asset_price_content_tag?.rawAttributes['value']
+        if(asset_data[0] == undefined || asset_data[1] == undefined) {
+            throw(global.error_fetching_asset);
+        }
 
-        return { 
+        const updated_asset: Asset = { 
             id: asset_param.id,
-            name: asset_name?.trim(),
-            price: asset_price,
+            name: asset_data[0]?.trim(),
+            price: asset_data[1],
             previous_price: asset_param.price,
             store: asset_param.store,
             prospect: asset_param.prospect,
             url_string: asset_param.url_string,
-        } as Asset;
+        };
 
-    } catch (e) {
-        console.log('Error in function: ', e);
+        return [updated_asset, null];
+
+    } catch (e: any) {
+        return [null, e];
     }
+}
 
-    return null;
+const amazonScraper = (html: HTMLElement) => {
+    const asset_description_content_tag = html.getElementById('productTitle');
+    const asset_name = asset_description_content_tag?.firstChild?.innerText;
+
+    const asset_price_content_tag = html.getElementById('items[0.base][customerVisiblePrice][amount]');
+    const asset_price = asset_price_content_tag?.rawAttributes['value']
+
+    return [asset_name, asset_price];
 }

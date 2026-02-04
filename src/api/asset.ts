@@ -2,7 +2,7 @@ import { Asset, Store_ENUM, User } from "../utils/types";
 import { getOrCreateUser } from "./user";
 import { getUserByID } from "../database/queries/user";
 import { sendAssetUpdateToUser } from "./whatsapp";
-import { scrapeAndCreateAssetData } from "../scraper/scraper";
+import { getUpdatedAssetInfo, scrapeAndCreateAssetData } from "../scraper/scraper";
 import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../database/queries/asset";
 import * as global from '../utils/global';
 import { isURLValid } from "../utils/utils";
@@ -18,7 +18,7 @@ export const createAsset = async (asset_url_param: string, user_param: User): Pr
             prospect: {id : user_param.id}
         }
 
-        let asset = await scrapeAndCreateAssetData(asset_prototype);
+        let asset = await getUpdatedAssetInfo(asset_prototype);
         if(!asset) throw (global.error_fetching_asset);
 
         return await createAssetTracker(asset);
@@ -51,13 +51,13 @@ export const getAndUpdateAllAssets = async () => {
     try {
         const assets = await getAllAssetsQuery();
         assets.forEach(async latest_asset_copy => {
-            const updated_asset = await scrapeAndCreateAssetData(latest_asset_copy);
-            if(!updated_asset) throw (global.error_fetching_asset);
-
-            const asset_owner = await getUserByID(updated_asset.prospect.id || '');
-            if (updated_asset.price !== latest_asset_copy.price ) {
-                await updateAsset(updated_asset);
-                await sendAssetUpdateToUser(asset_owner, updated_asset); 
+            const [updated_asset, error] = await getUpdatedAssetInfo(latest_asset_copy);
+            if(error) return;
+            const cleaned_asset = updated_asset as Asset;
+            const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
+            if (cleaned_asset.price !== latest_asset_copy.price ) {
+                await updateAsset(cleaned_asset);
+                await sendAssetUpdateToUser(asset_owner, cleaned_asset); 
             }
         });
     } catch (e) {
