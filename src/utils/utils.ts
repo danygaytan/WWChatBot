@@ -1,8 +1,7 @@
 import { randomInt } from "crypto";
 import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses";
 import WAWebJS, { MessageMedia } from "whatsapp-web.js";
-import { Store_ENUM } from "../types";
-import * as global from './global';
+import { Store_ENUM } from "./types";
 
 
 // In case we have to add a previous message body to the current one 
@@ -67,10 +66,8 @@ export const constructResponseInputMessageContentList = ({
                 image_url: item.data, // [TODO] verify
             } as ResponseInputContent;
         });
-
         inputMessageContent = inputMessageContent.concat(imgInputAttachmentItems);
     }
-
     return inputMessageContent;
 }
 
@@ -118,7 +115,6 @@ export const isValidDomain = (url_domain_text: string) => {
     } catch (e: any) {
         return [false, Store_ENUM.DEFAULT]
     }
-
 }
 
 export const generateRandomUsername = () => {

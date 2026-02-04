@@ -1,4 +1,4 @@
-import { Asset } from "../types";
+import { Asset } from "./types";
 
 export const error_no_command_text = 'No escribiste ningun comando';
 export const error_forbidden_caller = 'No tienes permiso de usarme';

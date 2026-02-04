@@ -1,6 +1,6 @@
 import { global_client } from "..";
 import WAWebJS from "whatsapp-web.js";
-import { Asset, User } from "../types";
+import { Asset, User } from "../utils/types";
 import { success_track_cron_job_general_response } from "../utils/global";
 
 export const sendAssetUpdateToUser = async (user: User, asset: Asset) => {

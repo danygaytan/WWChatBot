@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import { parse } from 'node-html-parser';
-import { Asset , Store_ENUM } from '../types';
+import { Asset , Store_ENUM } from '../utils/types';
 
 export const scrapeAndCreateAssetData = async (asset_param: Asset): Promise<Asset | null> => {
     try {

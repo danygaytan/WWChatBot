@@ -1,9 +1,9 @@
-import { Asset, Store_ENUM, User } from "../types";
+import { Asset, Store_ENUM, User } from "../utils/types";
 import { getOrCreateUser } from "./user";
-import { getUserByID } from "../queries/user";
+import { getUserByID } from "../database/queries/user";
 import { sendAssetUpdateToUser } from "./whatsapp";
 import { scrapeAndCreateAssetData } from "../scraper/scraper";
-import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../queries/asset";
+import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../database/queries/asset";
 import * as global from '../utils/global';
 import { isURLValid } from "../utils/utils";
 

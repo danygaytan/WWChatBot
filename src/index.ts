@@ -1,12 +1,12 @@
-import pkg from "whatsapp-web.js";
-const { Client, LocalAuth } = pkg;
-import { handleCommand } from "./commands/index";
-import { AppDataSource } from "./db";
 import * as dotenv from 'dotenv';
-import * as global from './utils/global';
 import * as qrcode from 'qrcode';
+import pkg from "whatsapp-web.js";
+import { AppDataSource } from "./database/index";
+import { handleCommand } from "./commands/index";
 import { createGetAndUpdateAllAssetsCronJob } from './cron-jobs/assets';
+
 dotenv.config()
+const { Client, LocalAuth } = pkg;
 
 export let global_client: pkg.Client;
 
