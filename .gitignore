@@ -138,3 +138,6 @@ dist
 
 # wwebjs files and directories
 .wwebjs_*
+
+prod
+patches
