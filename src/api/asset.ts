@@ -53,6 +53,7 @@ export const getAndUpdateAllAssets = async () => {
         assets.forEach(async latest_asset_copy => {
             const [updated_asset, error] = await getUpdatedAssetInfo(latest_asset_copy);
             if(error) return;
+
             const cleaned_asset = updated_asset as Asset;
             const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
             if (cleaned_asset.price !== latest_asset_copy.price ) {
