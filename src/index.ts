@@ -1,5 +1,6 @@
 import * as dotenv from 'dotenv';
 import * as qrcode from 'qrcode';
+import { wweb_client_config } from './startup-config';
 import pkg from "whatsapp-web.js";
 import { AppDataSource } from "./database/index";
 import { handleCommand } from "./commands/index";
@@ -11,36 +12,8 @@ const { Client, LocalAuth } = pkg;
 export let global_client: pkg.Client;
 
 const main = async () => {
-    const client = new Client({
-        authStrategy: new LocalAuth(
-            {
-                // './.wwebjs_auth' as a default
-                dataPath: '/var/sessions', // /var/sessions whenever Docker runs it
-                rmMaxRetries: 3,
-            }
-        ),
-        puppeteer: {
-            headless: false, // false whenever Docker runs it
-            // executablePath: '/usr/bin/chromium', // comment when Docker runs it
-            args: [
-                "--no-sandbox",
-                "--disable-setuid-sandbox",
-                "--disable-dev-shm-usage",
-                "--disable-gpu",
-                "--disable-extensions",
-                "--disable-background-networking",
-                "--disable-background-timer-throttling",
-                "--disable-client-side-phishing-detection",
-                "--disable-default-apps",
-                "--disable-sync",
-                "--metrics-recording-only",
-                "--no-first-run",
-                "--mute-audio",
-                "--safebrowsing-disable-auto-update",
-                "--window-size=1920,1080"
-            ]
-        }
-    });
+    const client_config = wweb_client_config[process.env.CONFIG_TARGET! as keyof typeof wweb_client_config] || wweb_client_config.dev;
+    const client = new Client(client_config);
 
     client.initialize();
 
