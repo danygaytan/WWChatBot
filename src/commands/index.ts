@@ -2,6 +2,7 @@ import { ask } from './ask';
 import { track } from './track';
 
 import * as dotenv from 'dotenv';
+import * as global from '../utils/global';
 import WAWebJS from "whatsapp-web.js";
 import { getPrefixAndCommandFromMessage } from "../utils/utils";
 dotenv.config();
@@ -14,8 +15,8 @@ commandMap.set('ask', ask);
 export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     const should_start_with_prefix = process.env.COMMAND_PREFIX || '!';
     const [prefix, command] = getPrefixAndCommandFromMessage(msg);
-    if(prefix !== should_start_with_prefix) return;
+    if(prefix !== should_start_with_prefix) return chat.sendMessage(global.error_no_command_found);
 
     const command_fn = commandMap.get(command);
-    return command_fn();
+    return await command_fn(chat, msg);
 }

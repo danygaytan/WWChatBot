@@ -1,4 +1,4 @@
-import { Asset as Asset_model } from "./models/asset"
+import { Asset as Asset_model } from "../database/models/asset";
 
 export interface User {
     id: string,

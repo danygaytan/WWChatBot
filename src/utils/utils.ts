@@ -77,7 +77,7 @@ export const getPromptFromMessage = (msg: WAWebJS.Message) => {
 }
 
 export const getPrefixAndCommandFromMessage = (msg: WAWebJS.Message) => {
-    const full_command = msg.body.split(' ').slice(0).join(' ');
+    const full_command = msg.body.split(' ').slice(0, 1).join(' ');
     const prefix = full_command[0];
     const command = full_command.slice(1);
 
@@ -86,8 +86,7 @@ export const getPrefixAndCommandFromMessage = (msg: WAWebJS.Message) => {
 
 export const isURLValid = async (url_string: string) => {
     try {
-        const url_whitelist = String(process.env.DOMAIN_WHITELIST).split(',') || [];
-        const domain_url = url_string.split(':')[1].split('/')[2];
+        const domain_url = url_string.split(':')[1].split('/')[2].split('.')[0];
         const [is_valid_url_domain, domainENUM] = isValidDomain(domain_url);
 
         if(!is_valid_url_domain) {

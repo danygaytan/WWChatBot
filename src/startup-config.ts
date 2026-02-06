@@ -8,6 +8,10 @@ export const wweb_client_config = {
                 rmMaxRetries: 3,
             }
         ),
+        webVersionCache: {
+            type: 'remote' as const,
+            remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+        },
         puppeteer: {
             headless: true,
             executablePath: '/usr/bin/chromium',
@@ -37,6 +41,10 @@ export const wweb_client_config = {
                 rmMaxRetries: 3,
             }
         ),
+        webVersionCache: {
+            type: 'remote' as const,
+            remotePath: 'https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html',
+        },
         puppeteer: {
             headless: false,
             args: [

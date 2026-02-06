@@ -1,10 +1,12 @@
-import { AppDataSource } from "../../db"
-import { Asset as Asset_model } from '../models/asset'
-import { Asset, Store_ENUM, User } from "../../utils/types"
+import { AppDataSource } from "../index";
+import { Asset as Asset_model } from '../models/asset';
+import { Asset, Store_ENUM, User } from "../../utils/types";
 
 export const createAssetTracker = async (asset: Asset): Promise<Asset> => {
     const assetRepository = await AppDataSource.getRepository(Asset_model);
-    return await assetRepository.save(asset);
+    const created_asset = await assetRepository.save(asset);
+
+    return created_asset as Asset;
 }
 
 export const updateAsset = async (asset: Asset) => {

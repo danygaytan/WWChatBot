@@ -1,5 +1,5 @@
 import { CronJob } from 'cron';
-import { getAndUpdateAllAssets } from '../api/asset';
+import { getAndUpdateAllAssets } from '../controllers/asset';
 
 export const createGetAndUpdateAllAssetsCronJob = async () => {
     const job = new CronJob(

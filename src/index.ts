@@ -7,7 +7,7 @@ import { handleCommand } from "./commands/index";
 import { createGetAndUpdateAllAssetsCronJob } from './cron-jobs/assets';
 
 dotenv.config()
-const { Client, LocalAuth } = pkg;
+const { Client } = pkg;
 
 export let global_client: pkg.Client;
 

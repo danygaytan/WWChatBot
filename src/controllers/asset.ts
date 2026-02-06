@@ -1,11 +1,10 @@
-import { Asset, Store_ENUM, User } from "../utils/types";
-import { getOrCreateUser } from "./user";
-import { getUserByID } from "../database/queries/user";
-import { sendAssetUpdateToUser } from "./whatsapp";
-import { getUpdatedAssetInfo, scrapeAndCreateAssetData } from "../scraper/scraper";
-import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../database/queries/asset";
 import * as global from '../utils/global';
 import { isURLValid } from "../utils/utils";
+import { sendAssetUpdateToUser } from "./whatsapp";
+import { getUserByID } from "../database/queries/user";
+import { Asset, Store_ENUM, User } from "../utils/types";
+import { getUpdatedAssetInfo } from "../scraper/scraper";
+import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../database/queries/asset";
 
 export const createAsset = async (asset_url_param: string, user_param: User): Promise<Asset | null> => {
     try {
@@ -18,10 +17,10 @@ export const createAsset = async (asset_url_param: string, user_param: User): Pr
             prospect: {id : user_param.id}
         }
 
-        let asset = await getUpdatedAssetInfo(asset_prototype);
-        if(!asset) throw (global.error_fetching_asset);
+        let [asset, error] = await getUpdatedAssetInfo(asset_prototype);
+        if(error) throw (global.error_fetching_asset);
 
-        return await createAssetTracker(asset);
+        return await createAssetTracker(asset as Asset);
     } catch (e) {
         console.log("Error in trackAsset: ", e);
         return null;
@@ -48,20 +47,22 @@ export const getAllAssets = async () => {
 }
 
 export const getAndUpdateAllAssets = async () => {
-    try {
-        const assets = await getAllAssetsQuery();
-        assets.forEach(async latest_asset_copy => {
+    let updated_assets: Asset[] = [];
+    const assets = await getAllAssetsQuery();
+    assets.forEach(async latest_asset_copy => {
+        try {
             const [updated_asset, error] = await getUpdatedAssetInfo(latest_asset_copy);
-            if(error) return;
+            if(error) throw(error);
 
             const cleaned_asset = updated_asset as Asset;
             const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
             if (cleaned_asset.price !== latest_asset_copy.price ) {
-                await updateAsset(cleaned_asset);
                 await sendAssetUpdateToUser(asset_owner, cleaned_asset); 
             }
-        });
-    } catch (e) {
-        console.log('Error in getAndUpdateAllAssets: ', e);
-    }
+        } catch (e: any) {
+            console.log('Error in getAndUpdateAllAssets: ', e);
+        }
+    });
+
+    await Promise.all(updated_assets.map(asset => {updateAsset(asset);}))
 }

@@ -1,6 +1,6 @@
-import { AppDataSource } from "../../db"
-import { User as User_model } from '../models/user'
-import { User } from "../../utils/types"
+import { User } from "../../utils/types";
+import { AppDataSource } from "../index";
+import { User as User_model } from '../models/user';
 
 export const createUser = async (user: User) => {
     await AppDataSource.createQueryBuilder()

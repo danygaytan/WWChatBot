@@ -1,7 +1,7 @@
 import WAWebJS from "whatsapp-web.js";
 import * as global from "../utils/global";
-import { createAsset } from "../api/asset";
-import { getOrCreateUser } from "../api/user";
+import { createAsset } from "../controllers/asset";
+import { getOrCreateUser } from "../controllers/user";
 import { getPromptFromMessage } from "../utils/utils";
 
 export const track = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {

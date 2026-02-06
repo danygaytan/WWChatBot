@@ -7,7 +7,7 @@ export const ask = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     try {
         const [completeMessageString, mediaAttachments] = await searchAndConstructContextFromMessageObject(msg);
         if (completeMessageString.length == 0) {
-            chat.sendMessage('Tienes que escribir un query');
+            chat.sendMessage(global.error_no_query_in_body);
         }
 
         const inputContent = constructResponseInputMessageContentList({
