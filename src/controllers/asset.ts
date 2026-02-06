@@ -29,10 +29,10 @@ export const createAsset = async (asset_url_param: string, user_param: User): Pr
 
 export const updateAsset = async (asset_param: Asset) => {
     try {
-        if(!asset_param.id ) throw ('The asset ID is invalid.');
+        if(!asset_param.id) throw (global.error_fetching_asset);
 
         const asset = await getAssetByID(asset_param.id);
-        if(!asset) throw ('There is an error retrieving the desired asset.');
+        if(!asset) throw (global.error_fetching_asset);
 
         await updateAssetQuery(asset_param);
         return getAssetByID(asset_param.id);
@@ -56,7 +56,7 @@ export const getAndUpdateAllAssets = async () => {
 
             const cleaned_asset = updated_asset as Asset;
             const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
-            if (cleaned_asset.price !== latest_asset_copy.price ) {
+            if (cleaned_asset.price !== undefined && cleaned_asset.price !== latest_asset_copy.price ) {
                 await sendAssetUpdateToUser(asset_owner, cleaned_asset); 
             }
         } catch (e: any) {
