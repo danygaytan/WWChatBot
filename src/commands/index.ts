@@ -15,8 +15,9 @@ commandMap.set('ask', ask);
 export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     const should_start_with_prefix = process.env.COMMAND_PREFIX || '!';
     const [prefix, command] = getPrefixAndCommandFromMessage(msg);
-    if(prefix !== should_start_with_prefix) return chat.sendMessage(global.error_no_command_found);
+    if(prefix !== should_start_with_prefix) return;
 
     const command_fn = commandMap.get(command);
+    if (!command_fn) return chat.sendMessage(global.error_no_command_found);
     return await command_fn(chat, msg);
 }

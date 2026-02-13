@@ -29,7 +29,6 @@ export const searchAndConstructContextFromMessageObject = async (msg: WAWebJS.Me
     const mainMessageMedia = await extractAttachmentFromMessageObject(msg);
     if (mainMessageMedia !== null) attachments.push(mainMessageMedia);
 
-    console.log(messageWithContextString, attachments.length);
     return [messageWithContextString, attachments];
 }
 
