@@ -9,7 +9,7 @@ export const error_general_failure = 'Algo pasó y no se ejecutó el comando :('
 export const error_track_command_general_failure = 'Hubo un error al generar el rastreo del producto';
 export const error_track_command_unable_to_verify_url = 'La URL escrita no es valida';
 export const error_fetching_asset = 'No he podido obtener la ultima informacion del producto.';
-export const error_createAsset_general_failure = 'No he podido registrar el producto solicitado.';
+export const error_createAsset_general_failure = 'No he podido registrar el producto solicitado. Es posible que exista un error con el producto.';
 export const error_user_not_found = 'El usuario no existe.';
 
 

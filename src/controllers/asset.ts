@@ -47,7 +47,7 @@ export const getAllAssets = async () => {
 }
 
 export const getAndUpdateAllAssets = async () => {
-    let updated_assets: Asset[] = [];
+    let asset_and_owner_list: (Asset | User)[] = [];
     const assets = await getAllAssetsQuery();
     assets.forEach(async latest_asset_copy => {
         try {
@@ -57,12 +57,20 @@ export const getAndUpdateAllAssets = async () => {
             const cleaned_asset = updated_asset as Asset;
             const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
             if (cleaned_asset.price !== undefined && cleaned_asset.price !== latest_asset_copy.price ) {
-                await sendAssetUpdateToUser(asset_owner, cleaned_asset); 
+                const asset_and_owner: (Asset | User) = {
+                    ...cleaned_asset,
+                    ...asset_owner,
+                };
+                asset_and_owner_list.push(asset_and_owner);
             }
         } catch (e: any) {
             console.log('Error in getAndUpdateAllAssets: ', e);
         }
     });
 
-    await Promise.all(updated_assets.map(asset => {updateAsset(asset);}))
+    await Promise.all(asset_and_owner_list.map(element => 
+    {
+        updateAsset(element as Asset);
+        sendAssetUpdateToUser(element as User, element as Asset)
+    }));
 }

@@ -10,12 +10,13 @@ export const track = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
         const sender = await chat.getContact();
         const user = await getOrCreateUser(sender);
 
+        // The Asset info is scraped from Amazon to create the object.
         const created_asset = await createAsset(url_string, user)
         if(!created_asset) throw (global.error_createAsset_general_failure);
         
-        return chat.sendMessage(global.success_track_command_general_response(created_asset));
+        chat.sendMessage(global.success_track_command_general_response(created_asset));
     } catch (e: any) {
-        console.log('Error in trackAsset: ', e)
-        return chat.sendMessage(e);
+        console.log(e)
+        chat.sendMessage(e);
     }
 }
