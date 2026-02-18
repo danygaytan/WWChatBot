@@ -9,7 +9,7 @@ puppeteer.use(StealthPlugin());
 
 export const getUpdatedAssetInfo = async (asset_param: Asset): Promise<(Asset | (string | null))[]> => {
     const browser = await puppeteer.launch({
-        headless: false,
+        headless: true,
          args: [
                 "--no-sandbox",
                 "--disable-setuid-sandbox",
@@ -39,11 +39,31 @@ export const getUpdatedAssetInfo = async (asset_param: Asset): Promise<(Asset | 
         const html = await page.content();
         const root = parse(html);
 
-        let asset_data = amazonScraper(root);
+        let asset_data: (string | undefined)[] = [asset_param.name, asset_param.price];
+        switch(asset_param.store) {
+            case Store_ENUM.AMAZON:
+                asset_data = amazonScraper(root);
+                break;
+            default: break;
+        }
+
+        if(asset_data[0] == undefined || asset_data[1] == undefined) {
+            throw(global.error_fetching_asset);
+        }
+
+        const updated_asset: Asset = { 
+            id: asset_param.id,
+            name: asset_data[0]?.trim(),
+            price: asset_data[1],
+            previous_price: asset_param.price,
+            store: asset_param.store,
+            prospect: asset_param.prospect,
+            url_string: asset_param.url_string,
+        };
 
         await browser.close();
         
-        return [{ ...asset_param, price: asset_data[1] }, null];
+        return [updated_asset, null];
 
     } catch (e) {
         await browser.close();
