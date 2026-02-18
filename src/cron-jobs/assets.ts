@@ -3,7 +3,7 @@ import { getAndUpdateAllAssets } from '../controllers/asset';
 
 export const createGetAndUpdateAllAssetsCronJob = async () => {
     const job = new CronJob(
-        '* * * * *', // runs at every hour.
+        '0 * * * *', // runs at every hour.
         async () => {await getAndUpdateAllAssets()},
         null,
         true,
