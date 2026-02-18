@@ -2,48 +2,37 @@ import fetch from 'node-fetch';
 import { HTMLElement, parse } from 'node-html-parser';
 import { Asset , Store_ENUM } from '../utils/types';
 import * as global from '../utils/global';
+import puppeteer from 'puppeteer-extra';
+import StealthPlugin from 'puppeteer-extra-plugin-stealth';
+
+puppeteer.use(StealthPlugin());
 
 export const getUpdatedAssetInfo = async (asset_param: Asset): Promise<(Asset | (string | null))[]> => {
-    try {
-        const http_response = await fetch(asset_param.url_string as string, {
-            method: 'GET',
-            redirect: 'follow',
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36',
-                'Accept': 'text/html,application/xhtml+xml,xml;q=0.9,image/avif,webp,*/*;q=0.8',
-                'Accept-Language': 'en-US,en;q=0.5'
-            }
-        });
+    const browser = await puppeteer.launch({
+        executablePath: '/usr/bin/chromium-browser',
+        headless: true,
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--disable-dev-shm-usage']
+    });
 
-        const html = await http_response.text();
+    try {
+        const page = await browser.newPage();
+        
+        await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36');
+
+        await page.goto(asset_param.url_string as string, { waitUntil: 'networkidle2' });
+
+        const html = await page.content();
         const root = parse(html);
 
-        let asset_data: (string | undefined)[] = [asset_param.name, asset_param.price];
-        switch(asset_param.store) {
-            case Store_ENUM.AMAZON:
-                asset_data = amazonScraper(root);
-                break;
-            default: break;
-        }
+        let asset_data = amazonScraper(root);
 
-        if(asset_data[0] == undefined || asset_data[1] == undefined) {
-            throw(global.error_fetching_asset);
-        }
+        await browser.close();
+        
+        return [{ ...asset_param, price: asset_data[1] }, null];
 
-        const updated_asset: Asset = { 
-            id: asset_param.id,
-            name: asset_data[0]?.trim(),
-            price: asset_data[1],
-            previous_price: asset_param.price,
-            store: asset_param.store,
-            prospect: asset_param.prospect,
-            url_string: asset_param.url_string,
-        };
-
-        return [updated_asset, null];
-
-    } catch (e: any) {
-        return [null, e];
+    } catch (e) {
+        await browser.close();
+        return [null, e as string];
     }
 }
 
