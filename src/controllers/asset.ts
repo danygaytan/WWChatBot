@@ -5,6 +5,7 @@ import { getUserByID } from "../database/queries/user";
 import { Asset, Store_ENUM, User } from "../utils/types";
 import { getUpdatedAssetInfo } from "../scraper/scraper";
 import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID, getAssetsByUserID, deleteAssetByURL as deleteAssetByURLQuery} from "../database/queries/asset";
+import { time } from 'console';
 
 export const createAsset = async (asset_url_param: string, user_param: User): Promise<Asset | null> => {
     try {
@@ -67,6 +68,7 @@ export const getAllAssetsByUserId = async (user_param: User) => {
 
 export const getAndUpdateAllAssets = async () => {
     const assets = await getAllAssetsQuery();
+    console.log('Asset update batch running at', Date.now());
     await assets.forEach(async latest_asset_copy => {
         try {
             const [updated_asset, error] = await getUpdatedAssetInfo(latest_asset_copy);
@@ -74,7 +76,8 @@ export const getAndUpdateAllAssets = async () => {
 
             const cleaned_asset = updated_asset as Asset;
             const asset_owner = await getUserByID(cleaned_asset?.prospect?.id || '');
-            if (cleaned_asset.price !== undefined && cleaned_asset.price !== latest_asset_copy.price ) {
+            if (cleaned_asset.price && cleaned_asset.price !== latest_asset_copy.price ) {
+                console.log(`Asset with ID ${cleaned_asset.id} has a update in its price.`);
                 await Promise.all(
                 [
                     updateAsset(cleaned_asset),
