@@ -1,6 +1,6 @@
 import WAWebJS from "whatsapp-web.js";
 import { getOrCreateUser } from "../controllers/user";
-import { getPromptFromMessage, prettifyAssetList } from "../utils/utils";
+import { prettifyAssetList } from "../utils/utils";
 import { getAllAssetsByUserId } from "../controllers/asset";
 import * as global from '../utils/global';
 
