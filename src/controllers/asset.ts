@@ -4,7 +4,7 @@ import { sendAssetUpdateToUser } from "./whatsapp";
 import { getUserByID } from "../database/queries/user";
 import { Asset, Store_ENUM, User } from "../utils/types";
 import { getUpdatedAssetInfo } from "../scraper/scraper";
-import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID } from "../database/queries/asset";
+import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID, getAssetsByUserID, deleteAssetByURL as deleteAssetByURLQuery} from "../database/queries/asset";
 
 export const createAsset = async (asset_url_param: string, user_param: User): Promise<Asset | null> => {
     try {
@@ -42,8 +42,27 @@ export const updateAsset = async (asset_param: Asset) => {
     } 
 }
 
+export const deleteAssetByURL = async (asset_url_param: string, user_param: User): Promise<boolean> => {
+    try {
+        return await deleteAssetByURLQuery(asset_url_param, user_param.id);
+    } catch (e) {
+        return false;
+    }
+}
+
 export const getAllAssets = async () => {
     return await getAllAssetsQuery();
+}
+
+export const getAllAssetsByUserId = async (user_param: User) => {
+    try {
+        const assets = await getAssetsByUserID(user_param.id);
+        if (!assets) throw (global.error_fetching_asset);
+
+        return assets;
+    } catch (e) {
+        return null;
+    }
 }
 
 export const getAndUpdateAllAssets = async () => {

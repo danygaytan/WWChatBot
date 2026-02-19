@@ -1,7 +1,7 @@
 import { randomInt } from "crypto";
 import { ResponseInputContent, ResponseInputMessageContentList } from "openai/resources/responses/responses";
 import WAWebJS, { MessageMedia } from "whatsapp-web.js";
-import { Store_ENUM } from "./types";
+import { Asset, Store_ENUM } from "./types";
 
 
 // In case we have to add a previous message body to the current one 
@@ -120,4 +120,17 @@ export const generateRandomUsername = () => {
     const adjectives = String(process.env.BOT_USER_ADJECTIVES).split(',') || [];
 
     return `${nouns[randomInt(nouns.length)]} ${adjectives[randomInt(adjectives.length)]}`
+}
+
+export const prettifyAssetList = (assets: Asset[]) => {
+    let message = '';
+
+    assets.forEach(asset => {
+        const sub_message = `${asset.url_string} | Precio actual $${asset.price} , precio anterior: $${!asset.previous_price ? asset.price : asset.previous_price} \n \n`;
+        message += sub_message;
+    });
+
+    console.log(message);
+
+    return message;
 }

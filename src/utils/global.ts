@@ -11,11 +11,13 @@ export const error_track_command_unable_to_verify_url = 'La URL escrita no es va
 export const error_fetching_asset = 'No he podido obtener la ultima informacion del producto.';
 export const error_createAsset_general_failure = 'No he podido registrar el producto solicitado. Es posible que exista un error con el producto.';
 export const error_user_not_found = 'El usuario no existe.';
+export const error_deletion_general_failure = 'No se pudo eliminar el producto solicitado. Es posible que no exista.';
+
 
 
 export const warning_command_work_in_progress = 'Comando en construcción';
 
-
+export const success_deletion_general_message = 'Producto borrado.';
 export const success_track_command_general_response = (asset: Asset) => {
     return `
 Tu producto esta siendo rastreado 👀
