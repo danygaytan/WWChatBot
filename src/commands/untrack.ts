@@ -12,7 +12,7 @@ export const untrack = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
 
         const deletion_result = await deleteAssetByURL(url_string, user);
 
-        if(deletion_result) throw (global.error_deletion_general_failure);
+        if(!deletion_result) throw (global.error_deletion_general_failure);
         msg.reply(global.success_deletion_general_message);
         
     } catch (e: any) {

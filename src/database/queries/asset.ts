@@ -49,8 +49,6 @@ export const getAssetsByUserID = async (user_id: string): Promise<Asset[] | null
     .where('asset.prospect = :id', { id : user_id })
     .getMany();
 
-    // console.log('Query assets: ', assets);
-
     if (!assets) return null;
 
     return assets as Asset[];
