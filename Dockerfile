@@ -11,6 +11,7 @@ COPY yarn.lock    ./yarn.lock
 RUN apk update && \
     apk add --no-cache \
       git \
+      openssh \
       chromium \
       nss \
       freetype \
@@ -22,7 +23,8 @@ RUN apk update && \
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 
-COPY patches ./patches
+# COPY patches ./patches
+RUN git config --global url."https://github.com/".insteadOf ssh://git@github.com/
 RUN yarn install
 
 COPY . .
