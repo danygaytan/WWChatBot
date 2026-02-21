@@ -5,7 +5,6 @@ import { getUserByID } from "../database/queries/user";
 import { Asset, Store_ENUM, User } from "../utils/types";
 import { getUpdatedAssetInfo } from "../scraper/scraper";
 import { createAssetTracker, updateAsset as updateAssetQuery, getAllAssets as getAllAssetsQuery, getAssetByID, getAssetsByUserID, deleteAssetByURL as deleteAssetByURLQuery} from "../database/queries/asset";
-import { time } from 'console';
 
 export const createAsset = async (asset_url_param: string, user_param: User): Promise<Asset | null> => {
     try {
@@ -55,9 +54,10 @@ export const getAllAssets = async () => {
     return await getAllAssetsQuery();
 }
 
-export const getAllAssetsByUserId = async (user_param: User) => {
+export const getAllAssetsByUserId = async (user_param: User, page_number: number) => {
     try {
-        const assets = await getAssetsByUserID(user_param.id);
+        const page_limit = 5;
+        const assets = await getAssetsByUserID(user_param.id, page_number, page_limit);
         if (!assets) throw (global.error_fetching_asset);
 
         return assets;

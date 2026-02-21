@@ -17,8 +17,8 @@ export const error_deletion_general_failure = 'No se pudo eliminar el producto s
 
 export const warning_command_work_in_progress = 'Comando en construcción';
 
-export const success_deletion_general_message = 'Producto borrado.';
-export const success_track_command_general_response = (asset: Asset) => {
+export const success_deletion_general_message = '❌ Producto borrado. ❌';
+export const success_watch_command_general_response = (asset: Asset) => {
     return `
 Tu producto esta siendo rastreado 👀
     
@@ -40,4 +40,18 @@ Precio anterior: ~$${asset.previous_price}~
 Link: _${asset.url_string}_
 `;
 
+}
+
+
+export const prettifyAssetListResponse = (assets: Asset[]) => {
+    let message = '';
+
+    assets.forEach(asset => {
+        const sub_message = `▫️ ${asset.url_string} | Precio actual $${asset.price} | Estatus $${Number(asset.price) < Number(asset.previous_price) ? '🔻' : '🔺' } \n \n`;
+        message += sub_message;
+    });
+
+    console.log(message);
+
+    return message;
 }

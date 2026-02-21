@@ -4,7 +4,7 @@ import { createAsset } from "../controllers/asset";
 import { getOrCreateUser } from "../controllers/user";
 import { getPromptFromMessage } from "../utils/utils";
 
-export const track = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
+export const watch = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     try {
         const url_string = getPromptFromMessage(msg);
         const sender = await chat.getContact();
@@ -14,7 +14,7 @@ export const track = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
         const created_asset = await createAsset(url_string, user)
         if(!created_asset) throw (global.error_createAsset_general_failure);
         
-        chat.sendMessage(global.success_track_command_general_response(created_asset));
+        chat.sendMessage(global.success_watch_command_general_response(created_asset));
     } catch (e: any) {
         console.log(e)
         chat.sendMessage(e);

@@ -1,7 +1,7 @@
 import { ask } from './ask';
-import { track } from './track';
-import { untrack } from './untrack';
-import { trackers } from './trackers';
+import { watch } from './watch';
+import { unwatch } from './unwatch';
+import { watchlist } from './watchlist';
 
 import * as dotenv from 'dotenv';
 import * as global from '../utils/global';
@@ -11,9 +11,9 @@ dotenv.config();
 
 const commandMap = new Map<string, any>();
 commandMap.set('ask', ask);
-commandMap.set('track', track);
-commandMap.set('untrack', untrack);
-commandMap.set('trackers', trackers)
+commandMap.set('watch', watch);
+commandMap.set('unwatch', unwatch);
+commandMap.set('watchlist', watchlist);
 
 
 export const handleCommand = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {

@@ -4,7 +4,7 @@ import { getOrCreateUser } from "../controllers/user";
 import { getPromptFromMessage } from "../utils/utils";
 import { deleteAssetByURL } from "../controllers/asset";
 
-export const untrack = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
+export const unwatch = async (chat: WAWebJS.Chat, msg: WAWebJS.Message) => {
     try {
         const url_string = getPromptFromMessage(msg);
         const sender = await chat.getContact();

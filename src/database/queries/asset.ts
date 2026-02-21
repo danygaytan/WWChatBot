@@ -42,11 +42,13 @@ export const getAssetByID = async (asset_id: string): Promise<Asset | null> => {
     return asset as Asset;
 }
 
-export const getAssetsByUserID = async (user_id: string): Promise<Asset[] | null> => {
+export const getAssetsByUserID = async (user_id: string, page_number: number, page_size: number): Promise<Asset[] | null> => {
     const assets = await AppDataSource.getRepository(Asset_model)
     .createQueryBuilder('asset')
     .leftJoinAndSelect('asset.prospect', 'prospect')
     .where('asset.prospect = :id', { id : user_id })
+    .skip((page_number - 1) * page_size)
+    .take(page_size)
     .getMany();
 
     if (!assets) return null;
